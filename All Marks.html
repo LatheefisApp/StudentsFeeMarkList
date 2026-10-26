@@ -1,0 +1,1620 @@
+﻿<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>മദ്‌റസ ഫീസ് & മാർക്ക് മാനേജ്‌മെന്റ് സിസ്റ്റം</title>
+    <style>
+        body {
+            font-family: 'Meera Inimai', Arial, sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #f4f6f9;
+            color: #222;
+            margin: 0;
+            padding: 10px;
+        }
+        
+        #loginScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1b5e20;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .login-card {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 380px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.12);
+        }
+        h2 {
+            font-size: 26px;
+            text-align: center;
+            color: #1b5e20;
+            margin: 10px 0;
+        }
+        h3 {
+            font-size: 22px;
+            text-align: center;
+            color: #1b5e20;
+            margin: 12px 0;
+        }
+        h4 {
+            font-size: 20px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 19px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            font-size: 19px;
+            font-weight: bold;
+            border: 2px solid #bbb;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 12px;
+            font-size: 19px;
+        }
+        button:hover {
+            background-color: #1b5e20;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            margin-bottom: 12px;
+        }
+        th, td {
+            border: 2px solid #888;
+            padding: 8px 6px;
+            text-align: center;
+            font-size: 16px;
+        }
+        th {
+            background-color: #2e7d32;
+            color: white;
+            font-size: 17px;
+        }
+        .gender-header-row {
+            background-color: #e8f5e9;
+            color: #1b5e20;
+            font-weight: bold;
+            font-size: 17px;
+            text-align: left;
+            padding-left: 10px;
+        }
+        .status-paid { color: green; font-size: 20px; }
+        .status-unpaid { color: red; font-size: 20px; }
+        .absent-mark { color: red; font-weight: bold; font-size: 17px; }
+        .btn-danger { background-color: #c62828; color: white; }
+        .btn-danger:hover { background-color: #8e0000; }
+        .btn-wa { background-color: #25d366; color: white; }
+        .btn-wa:hover { background-color: #128c7e; }
+        .btn-cert { background-color: #8e24aa; color: white; }
+        .btn-cert:hover { background-color: #5e1675; }
+        .btn-edit { background-color: #0288d1; color: white; }
+        .btn-edit:hover { background-color: #01579b; }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+        .card {
+            padding: 18px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            font-size: 19px;
+        }
+        .card-students { background-color: #1976d2; }
+        .card-paid { background-color: #2e7d32; }
+        .card-unpaid { background-color: #c62828; }
+
+        .settings-box {
+            background: #ede7f6;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 22px;
+            border: 2px dashed #673ab7;
+        }
+        .section-block {
+            margin-bottom: 15px;
+            padding-top: 2px;
+        }
+        .footer-summary {
+            margin-top: 10px;
+            padding: 8px;
+            border-top: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 16px;
+        }
+
+        #certModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .certificate-container {
+            width: 100%;
+            max-width: 700px;
+            background: linear-gradient(135deg, #fffde7 0%, #ffffff 100%);
+            border: 14px double #1b5e20;
+            padding: 35px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            border-radius: 15px;
+            position: relative;
+            box-sizing: border-box;
+            margin: auto;
+        }
+        .cert-header {
+            color: #1b5e20;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .cert-title {
+            color: #d84315;
+            font-size: 30px;
+            font-weight: bold;
+            margin: 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .cert-body {
+            font-size: 20px;
+            line-height: 1.8;
+            margin: 22px 0;
+            color: #222;
+        }
+        .cert-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px;
+            padding: 0 15px;
+            font-size: 18px;
+        }
+
+        @media print {
+            @page { 
+                size: A4 landscape; 
+                margin: 0.5in; 
+            }
+            body { 
+                background: white; 
+                font-size: 10.5pt;
+                padding: 0;
+            }
+            .no-print { display: none !important; }
+            .container { 
+                max-width: 100%; 
+                padding: 0; 
+                box-shadow: none; 
+                margin: 0;
+            }
+            h3 { font-size: 14pt; margin: 4px 0; }
+            table { 
+                font-size: 10.5pt; 
+                margin-top: 2px; 
+                margin-bottom: 2px; 
+                border: 1px solid #000; 
+                page-break-inside: auto !important;
+            }
+            tr {
+                page-break-inside: avoid !important;
+                page-break-after: auto;
+            }
+            th, td { 
+                padding: 2px 3px !important; 
+                font-size: 10.5pt; 
+                border: 1px solid #000; 
+                line-height: 1.2;
+            }
+            th { background-color: #2e7d32 !important; color: white !important; -webkit-print-color-adjust: exact; }
+            .gender-header-row { font-size: 11pt; padding: 2px 4px !important; background-color: #e8f5e9 !important; -webkit-print-color-adjust: exact; }
+            .absent-mark { color: red !important; font-weight: bold; -webkit-print-color-adjust: exact; }
+            .print-gender-col { display: none !important; }
+            .section-block { 
+                margin-bottom: 6px; 
+                page-break-inside: avoid !important; 
+            }
+            .footer-summary { 
+                margin-top: 4px; 
+                padding: 2px 0; 
+                font-size: 10.5pt; 
+                page-break-inside: avoid !important; 
+            }
+            #certModal { position: relative; background: white; padding: 0; }
+            .certificate-container { border: 8px double #1b5e20; box-shadow: none; width: 100%; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loginScreen">
+    <div class="login-card">
+        <h3 style="color:#1b5e20; margin-top:0; font-size:24px;">മദ്‌റസ ആപ്പ് ലോഗിൻ</h3>
+        <p style="font-size:17px; color:#666;">തുറക്കാൻ പാസ്‌വേഡ് നൽകുക (ഡിഫോൾട്ട്: 1234)</p>
+        <div class="form-group">
+            <input type="password" id="appLoginPassword" placeholder="പാസ്‌വേഡ് അടിക്കുക" onkeypress="handleKeyPress(event)">
+        </div>
+        <button type="button" onclick="checkAppLogin()">ആപ്പ് തുറക്കുക</button>
+    </div>
+</div>
+
+<div class="container" id="mainAppContent" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center;" class="no-print">
+        <h2 style="margin:0; font-size:26px;">മദ്‌റസ ഫീസ് & മാർക്ക് മാനേജ്‌മെന്റ് സിസ്റ്റം</h2>
+        <button type="button" onclick="logoutApp()" class="btn-danger" style="width:auto; padding:10px 18px; margin:0; font-size:17px;">ലോക്ക് ചെയ്യുക</button>
+    </div>
+    <br class="no-print">
+
+    <div class="form-group no-print">
+        <label>മദ്‌റസയുടെ പേര്, സ്ഥലം, അംഗീകരണ നമ്പർ:</label>
+        <input type="text" id="madrassaDetails" placeholder="ഉദാ: നൂറുൽ ഉലൂം മദ്‌റസ, മലപ്പുറം, Reg No: 12345" oninput="saveMadrassaInfo()">
+    </div>
+
+    <!-- 1. ഡാഷ്‌ബോർഡ് -->
+    <div class="section-block">
+        <h3 id="printMadrassaTitle" style="text-align:center; color:#1b5e20; margin-bottom:2px; font-size:21px;">നൂറുൽ ഉലൂം മദ്‌റസ</h3>
+        <p id="printClassTitle" style="text-align:center; font-size:17px; font-weight:bold; color:#333; margin-top:0;"></p>
+        
+        <div class="no-print">
+            <h3>ഡാഷ്‌ബോർഡ്</h3>
+            <div class="form-group" style="max-width:350px; margin:auto; margin-bottom:15px;">
+                <label>വർഷം & മാസം തിരഞ്ഞെടുക്കുക:</label>
+                <div style="display:flex; gap:10px;">
+                    <select id="selectYear" onchange="loadAllData()">
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>
+                        <option value="2032">2032</option>
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>
+                        <option value="2035">2035</option>
+                    </select>
+                    <select id="selectMonth" onchange="loadAllData()">
+                        <option value="ജനുവരി">ജനുവരി</option>
+                        <option value="ഫെബ്രുവരി">ഫെബ്രുവരി</option>
+                        <option value="മാർച്ച്">മാർച്ച്</option>
+                        <option value="ഏപ്രിൽ">ഏപ്രിൽ</option>
+                        <option value="മെയ്">മെയ്</option>
+                        <option value="ജൂൺ">ജൂൺ</option>
+                        <option value="ജൂലൈ">ജൂലൈ</option>
+                        <option value="ഓഗസ്റ്റ്">ഓഗസ്റ്റ്</option>
+                        <option value="സെപ്റ്റംബർ">സെപ്റ്റംബർ</option>
+                        <option value="ഒക്ടോബർ">ഒക്ടോബർ</option>
+                        <option value="നവംബർ">നവംബർ</option>
+                        <option value="ഡിസംബർ">ഡിസംബർ</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" style="max-width:350px; margin:auto; margin-bottom:15px;">
+                <label>ക്ലാസ് തിരഞ്ഞെടുക്കുക:</label>
+                <select id="filterClass" onchange="onFilterClassChange()">
+                    <option value="">എല്ലാ ക്ലാസ്സുകളും</option>
+                    <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                </select>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card card-students">
+                    <h4 style="margin:5px 0; font-size:21px;">ആകെ വിദ്യാർത്ഥികൾ</h4>
+                    <p id="dashTotalStudents" style="margin:5px 0;">ആകെ: 0</p>
+                    <p id="dashGenderStudents" style="margin:5px 0;">ആൺ: 0 | പെൺ: 0</p>
+                </div>
+                <div class="card card-paid">
+                    <h4 style="margin:5px 0; font-size:21px;">ഫീസ് അടച്ചവർ</h4>
+                    <p id="dashPaidCount" style="margin:5px 0;">എണ്ണം: 0</p>
+                    <p id="dashPaidGenderCount" style="margin:5px 0;">ആൺ: 0 | പെൺ: 0</p>
+                    <p id="dashPaidAmount" style="margin:5px 0;">ആകെ തുക: ₹0</p>
+                </div>
+                <div class="card card-unpaid">
+                    <h4 style="margin:5px 0; font-size:21px;">ഫീസ് അടക്കാത്തവർ</h4>
+                    <p id="dashUnpaidCount" style="margin:5px 0;">എണ്ണം: 0</p>
+                    <p id="dashUnpaidGenderCount" style="margin:5px 0;">ആൺ: 0 | പെൺ: 0</p>
+                    <p id="dashUnpaidAmount" style="margin:5px 0;">ബാക്കി തുക: ₹0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="no-print">
+
+    <!-- 2. പുതിയ കുട്ടിയെ ചേർക്കൽ ഫോം -->
+    <div class="section-block no-print">
+        <h3 id="formTitleHeading">പുതിയ കുട്ടിയെ ചേർക്കാൻ</h3>
+        <form id="studentForm" onsubmit="saveNewStudent(event)">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:15px;">
+                <div class="form-group">
+                    <label>കുട്ടിയുടെ പേര്:</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label>ലിംഗഭേദം:</label>
+                    <select id="gender" required>
+                        <option value="ആൺ">ആൺ</option>
+                        <option value="പെൺ">പെൺ</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ക്ലാസ് (1 മുതൽ 12 വരെ):</label>
+                    <select id="className" required>
+                        <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ക്രമ നമ്പർ (Roll No):</label>
+                    <input type="number" id="rollNo" required>
+                </div>
+                <div class="form-group">
+                    <label>അഡ്മിഷൻ നമ്പർ:</label>
+                    <input type="text" id="admNo" required>
+                </div>
+                <div class="form-group">
+                    <label>മാസ ഫീസ് (രൂപ):</label>
+                    <input type="number" id="feeAmount" required>
+                </div>
+                <div class="form-group">
+                    <label>രക്ഷിതാവിന്റെ മൊബൈൽ നമ്പർ:</label>
+                    <input type="text" id="mobile" required>
+                </div>
+            </div>
+            <button type="submit" id="formSubmitBtn" style="padding: 14px; font-size: 20px;">കുട്ടിയെ സേവ് ചെയ്യുക</button>
+        </form>
+    </div>
+
+    <hr class="no-print">
+
+    <div class="form-group no-print">
+        <label>കുട്ടിയെ തിരയാൻ (പേര് / ക്രമ നമ്പർ / മൊബൈൽ നമ്പർ):</label>
+        <input type="text" id="searchBox" placeholder="ടൈപ്പ് ചെയ്യുക..." onkeyup="searchStudent()">
+    </div>
+
+    <!-- 3. കുട്ടികളുടെ പേഴ്സണൽ വിവരങ്ങളുടെ പട്ടിക -->
+    <div class="section-block">
+        <h3>കുട്ടികളുടെ പേഴ്സണൽ വിവരങ്ങൾ</h3>
+        <div style="overflow-x:auto;">
+            <table id="personalTable">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ക്രമ നം</th>
+                        <th>ക്ലാസ്</th>
+                        <th>അഡ്മി നം</th>
+                        <th>പേര്</th>
+                        <th>ലിംഗം</th>
+                        <th>മാസ ഫീസ്</th>
+                        <th>ഫോൺ നമ്പർ</th>
+                        <th class="no-print">നടപടികൾ</th>
+                    </tr>
+                </thead>
+                <tbody id="personalTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. ഫീസ് വിവരങ്ങൾ -->
+    <div class="section-block">
+        <h3>ഫീസ് വിവരങ്ങൾ (വരിസംഖ്യ & പരീക്ഷാ ഫീസ്)</h3>
+        <div style="overflow-x:auto;">
+            <table id="feeTable">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ക്രമ നം</th>
+                        <th>ക്ലാസ്</th>
+                        <th>അഡ്മി നം</th>
+                        <th>പേര്</th>
+                        <th style="width: 90px;">വരിസംഖ്യ</th>
+                        <th>ലിംഗം</th>
+                        <th>ഫോൺ</th>
+                        <th style="width: 90px;">പരീക്ഷാ ഫീസ്</th>
+                        <th class="no-print">നടപടികൾ</th>
+                    </tr>
+                </thead>
+                <tbody id="feeTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 5. പരീക്ഷാ മാർക്ക് ലിസ്റ്റ് -->
+    <div class="section-block">
+        <h3>പരീക്ഷാ മാർക്ക് ലിസ്റ്റ്</h3>
+
+        <div style="overflow-x:auto;">
+            <table id="markTable">
+                <thead>
+                    <tr id="markTableHeader">
+                        <th>ക്രമ നം</th>
+                        <th>ക്ലാസ്</th>
+                        <th>അഡ്മി നം</th>
+                        <th>പേര്</th>
+                        <th class="print-gender-col">ലിംഗം</th>
+                        <th>ഹാജർ</th>
+                        <th>ആകെ</th>
+                        <th>ശതമാനം</th>
+                        <th>ഗ്രേഡ്</th>
+                        <th>റാങ്ക്</th>
+                        <th>സ്റ്റാറ്റസ്</th>
+                        <th class="no-print">നടപടികൾ</th>
+                    </tr>
+                </thead>
+                <tbody id="markTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="footer-summary">
+            <div>
+                <p id="summaryPassedGender" style="margin:2px 0;"><strong>വിജയികൾ:</strong> ആൺ: 0 + പെൺ: 0 = ആകെ: 0</p>
+                <p id="summaryFailedGender" style="margin:2px 0;"><strong>പരാജയപ്പെട്ടവർ:</strong> ആൺ: 0 + പെൺ: 0 = ആകെ: 0</p>
+            </div>
+            <div style="text-align: center; min-width: 220px;" class="no-print">
+                <label style="font-size:17px; margin-bottom:3px;">ക്ലാസ് ഉസ്താദിന്റെ പേര്:</label>
+                <input type="text" id="usthadNameInput" placeholder="ഉസ്താദിന്റെ പേര് നൽകുക" style="padding:8px; font-size:17px; text-align:center;" oninput="updateUsthadDisplay()">
+            </div>
+            <div style="text-align: center; min-width: 200px;">
+                <p id="displayUsthadName" style="margin:2px 0;">ക്ലാസ് ഉസ്താദ്: ...............................</p>
+                <br class="no-print">
+                <p style="margin:2px 0;">ഒപ്പ്: ...............................</p>
+            </div>
+        </div>
+    </div>
+
+    <br class="no-print">
+    <button type="button" class="no-print" onclick="window.print()" style="background-color: #0288d1; padding: 16px; font-size: 21px;">A4 പേപ്പറിൽ പ്രിന്റ് / PDF എടുക്കുക</button>
+
+    <hr class="no-print">
+
+    <!-- 6. സെറ്റിംഗ്സ് -->
+    <div class="section-block no-print">
+        <h3>സെറ്റിംഗ്സ് (ഡാറ്റാ ബാക്കപ്പ്, ഡിലീറ്റ് & പാസ്‌വേഡ്)</h3>
+        <div class="settings-box">
+            <h4>ഡാറ്റ ബാക്കപ്പ് & ഇംപോർട്ട് (10 വർഷത്തെ സുരക്ഷിത സേവിംഗ്സിനായി)</h4>
+            <button type="button" onclick="exportData()" style="background-color: #0288d1; font-size:18px;">ഡാറ്റ ബാക്കപ്പ് ഡൗൺലോഡ് ചെയ്യുക (Export)</button>
+            <div style="margin-top: 15px;">
+                <label>ബാക്കപ്പ് ഫയൽ തിരഞ്ഞെടുക്കുക (Import):</label>
+                <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="background:white; margin-top:5px;">
+            </div>
+
+            <hr style="margin:20px 0;">
+
+            <h4>ഒരു ക്ലാസിലെ മുഴുവൻ കുട്ടികളെയും ഒന്നിച്ച് ഡിലീറ്റ് ചെയ്യാൻ</h4>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <select id="bulkDeleteClassSelect">
+                    <option value="">ക്ലാസ് തിരഞ്ഞെടുക്കുക</option>
+                    <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                </select>
+                <button type="button" onclick="deleteEntireClass()" class="btn-danger" style="margin-top:0; width:auto; padding:12px 18px; font-size:18px;">ക്ലാസ് ഡിലീറ്റ് ചെയ്യുക</button>
+            </div>
+
+            <hr style="margin:20px 0;">
+
+            <h4>പാസ്‌വേഡ് മാറ്റുക</h4>
+            <div class="form-group">
+                <label>പുതിയ പാസ്‌വേഡ് നൽകുക:</label>
+                <input type="password" id="newPasswordInput" placeholder="പുതിയ പാസ്‌വേഡ് ടൈപ്പ് ചെയ്യുക">
+            </div>
+            <button type="button" onclick="changePassword()" style="background-color: #673ab7; font-size:18px;">പാസ്‌വേഡ് അപ്ഡേറ്റ് ചെയ്യുക</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- 1. പേഴ്സണൽ വിവരങ്ങൾ എഡിറ്റ് ചെയ്യാനുള്ള മോഡൽ -->
+<div id="personalEditModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;" class="no-print">
+    <div style="background:white; padding:25px; border-radius:12px; width:90%; max-width:420px; max-height:90vh; overflow-y:auto;">
+        <h3 style="margin-top:0;">പേഴ്സണൽ വിവരങ്ങൾ തിരുത്താൻ</h3>
+        <input type="hidden" id="editPersonalId">
+        <div class="form-group">
+            <label>കുട്ടിയുടെ പേര്:</label>
+            <input type="text" id="editPersName">
+        </div>
+        <div class="form-group">
+            <label>ലിംഗഭേദം:</label>
+            <select id="editPersGender">
+                <option value="ആൺ">ആൺ</option>
+                <option value="പെൺ">പെൺ</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>ക്ലാസ്:</label>
+            <select id="editPersClass">
+                <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>ക്രമ നമ്പർ (Roll No):</label>
+            <input type="number" id="editPersRollNo">
+        </div>
+        <div class="form-group">
+            <label>അഡ്മിഷൻ നമ്പർ:</label>
+            <input type="text" id="editPersAdmNo">
+        </div>
+        <div class="form-group">
+            <label>മാസ ഫീസ് (രൂപ):</label>
+            <input type="number" id="editPersFee">
+        </div>
+        <div class="form-group">
+            <label>രക്ഷിതാവിന്റെ മൊബൈൽ നമ്പർ:</label>
+            <input type="text" id="editPersMobile">
+        </div>
+        <button type="button" onclick="confirmPersonalEdit()" style="font-size:18px; padding:12px;">വിവരങ്ങൾ അപ്ഡേറ്റ് ചെയ്യുക</button>
+        <button type="button" class="btn-danger" onclick="closeModal('personalEditModal')" style="margin-top:10px; font-size:18px; padding:12px;">ക്യാൻസൽ</button>
+    </div>
+</div>
+
+<!-- 2. ഫീസ് വിവരങ്ങൾ എഡിറ്റ് ചെയ്യാനുള്ള മോഡൽ -->
+<div id="feeEditModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;" class="no-print">
+    <div style="background:white; padding:25px; border-radius:12px; width:90%; max-width:420px; max-height:90vh; overflow-y:auto;">
+        <h3 style="margin-top:0;">ഫീസ് വിവരങ്ങൾ തിരുത്താൻ</h3>
+        <p id="feeEditStudentName" style="font-size:18px; text-align:center;"></p>
+        <input type="hidden" id="editFeeId">
+        <div class="form-group">
+            <label>ഫീസ് ഇനം:</label>
+            <select id="editFeeCategory">
+                <option value="വരിസംഖ്യ">വരിസംഖ്യ (Monthly Fee)</option>
+                <option value="പരീക്ഷാ ഫീസ്">പരീക്ഷാ ഫീസ് (Exam Fee)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>സ്റ്റാറ്റസ് (ഫീസ് രീതി):</label>
+            <select id="editFeeStatus">
+                <option value="paid">അടച്ചു (Paid)</option>
+                <option value="unpaid">അടച്ചില്ല (Unpaid)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>ഫീസ് ടൈപ്പ് (വിഭാഗം):</label>
+            <select id="editFeeTypeOption">
+                <option value="തൻമാസം">തൻമാസം</option>
+                <option value="കുടിശ്ശിക">കുടിശ്ശിക</option>
+                <option value="അഡ്വാൻസ്">അഡ്വാൻസ്</option>
+                <option value="കുടിശ്ശിക+തൻമാസം">കുടിശ്ശിക + തൻമാസം</option>
+                <option value="തൻമാസം+അഡ്വാൻസ്">തൻമാസം + അഡ്വാൻസ്</option>
+                <option value="കുടിശ്ശിക+തൻമാസം+അഡ്വാൻസ്">കുടിശ്ശിക + തൻമാസം + അഡ്വാൻസ്</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>തുക:</label>
+            <input type="number" id="editFeeAmount">
+        </div>
+        <button type="button" onclick="confirmFeeEdit()" style="font-size:18px; padding:12px;">ഫീസ് വിവരങ്ങൾ അപ്ഡേറ്റ് ചെയ്യുക</button>
+        <button type="button" class="btn-danger" onclick="closeModal('feeEditModal')" style="margin-top:10px; font-size:18px; padding:12px;">ക്യാൻസൽ</button>
+    </div>
+</div>
+
+<!-- 3. മാർക്ക് & ഹാജർ എഡിറ്റ് മോഡൽ -->
+<div id="markModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;" class="no-print">
+    <div style="background:white; padding:25px; border-radius:12px; width:94%; max-width:480px; max-height: 90vh; overflow-y: auto;">
+        <h3 style="margin-top:0;">ഹാജറും മാർക്കും തിരുത്താൻ 📚</h3>
+        <p id="markStudentName" style="font-size:18px; text-align:center; margin-bottom:12px;"></p>
+
+        <div class="form-group" style="background: #e1f5fe; padding: 12px; border-radius: 6px; margin-bottom:15px;">
+            <label style="font-size:17px; margin-bottom:5px;">പരീക്ഷ തിരഞ്ഞെടുക്കുക:</label>
+            <select id="examTypeSelect" style="padding:10px; font-size:17px;">
+                <option value="വാർഷിക പരീക്ഷ">വാർഷിക പരീക്ഷ</option>
+                <option value="അർദ്ധ വാർഷിക പരീക്ഷ">അർദ്ധ വാർഷിക പരീക്ഷ</option>
+                <option value="പാദ വാർഷിക പരീക്ഷ">പാദ വാർഷിക പരീക്ഷ</option>
+                <option value="മോഡൽ പരീക്ഷ">മോഡൽ പരീക്ഷ</option>
+                <option value="ക്ലാസ് പരീക്ഷ">ക്ലാസ് പരീക്ഷ</option>
+            </select>
+        </div>
+
+        <div class="form-group" style="background: #e1f5fe; padding: 12px; border-radius: 6px; margin-bottom:15px;">
+            <label style="font-size:17px; margin-bottom:5px;">ഹാജർ നില (ഹാജറായ ദിനങ്ങൾ / ആകെ വർക്കിംഗ് ദിനങ്ങൾ):</label>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="number" id="attPresent" placeholder="ഉദാ: 209" style="padding:10px; font-size:17px;">
+                <span style="font-size:20px;">/</span>
+                <input type="number" id="attTotal" placeholder="ഉദാ: 210" style="padding:10px; font-size:17px;">
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:17px; color:#1b5e20; padding:0 5px; margin-bottom:8px;">
+            <span style="width: 42%;">വിഷയം</span>
+            <span style="width: 25%; text-align:center;">പാസ്സ്</span>
+            <span style="width: 25%; text-align:center;">മാർക്ക് / A</span>
+            <span style="width: 8%;"></span>
+        </div>
+
+        <div id="dynamicMarkInputs"></div>
+
+        <button type="button" onclick="addNewSubjectInModal()" style="background-color: #00897b; font-size:18px; margin-top:8px; padding:12px;">+ വിഷയം ചേർക്കുക</button>
+        <button type="button" onclick="confirmMarks()" style="font-size:19px; background-color: #00695c; margin-top:12px; padding:14px;">മാർക്കും ഹാജറും സേവ് ചെയ്യുക 💾</button>
+        <button type="button" class="btn-danger" onclick="closeModal('markModal')" style="margin-top:10px; font-size:18px; padding:12px;">ക്യാൻസൽ</button>
+    </div>
+</div>
+
+<!-- അഭിനന്ദന സർട്ടിഫിക്കറ്റ് മോഡൽ -->
+<div id="certModal">
+    <div>
+        <div class="certificate-container" id="certBox">
+            <div style="font-size: 30px; margin-bottom: 5px;">🌸 🌿 🌸</div>
+            <h3 class="cert-header" id="certMadrassaName">നൂറുൽ ഉലൂം മദ്‌റസ</h3>
+            <h1 class="cert-title">⭐ അഭിനന്ദന സർട്ടിഫിക്കറ്റ് ⭐</h1>
+            <div class="cert-body">
+                ഈ സ്ഥാപനത്തിൽ <span id="certYearMonth">2026 ജനുവരി</span> മാസം നടന്ന മദ്‌റസ <span id="certExamType" style="font-weight:bold; color:#1b5e20;">വാർഷിക പരീക്ഷയിൽ</span> <span id="certClassName">10-ാം ക്ലാസ്</span> ൽ <span id="certGradeLevel" style="font-weight:bold; color:#d84315;">എല്ലാ വിഷയങ്ങളിലും A+ നേട്ടം</span> കൈവരിച്ച് ഉന്നത വിജയം കരസ്ഥമാക്കിയ 
+                <br><br>
+                <strong id="certStudentName" style="font-size:28px; color:#1b5e20; border-bottom: 2px dashed #1b5e20; padding-bottom:2px;">മുഹമ്മദ് ശാഫി കെ</strong>
+                <br>കുട്ടിക്ക് ഈ അഭിനന്ദന പത്രം സമർപ്പിക്കുന്നു.
+            </div>
+            <div class="cert-footer">
+                <div>തീയതി: <span id="certDate">05/06/2026</span></div>
+                <div>ക്ലാസ് ഉസ്താദ് / സ്വദർ ഉസ്താദ്</div>
+            </div>
+            <div style="font-size: 30px; margin-top: 10px;">🌸 🌿 🌸</div>
+        </div>
+        <div style="text-align:center; margin-top:18px;" class="no-print">
+            <button type="button" onclick="downloadCertificateJPG()" class="btn-cert" style="width:auto; padding:14px 25px; font-size:19px;">സർട്ടിഫിക്കറ്റ് JPG ഫയലായി ഡൗൺലോഡ് ചെയ്യുക</button>
+            <button type="button" onclick="closeCertModal()" class="btn-danger" style="width:auto; padding:14px 25px; font-size:19px; margin-left:10px;">ക്യാൻസൽ</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ml-IN';
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    function getStoredPassword() {
+        try {
+            return localStorage.getItem('madrassa_password') || '1234';
+        } catch(e) {
+            return '1234';
+        }
+    }
+
+    function verifyPasswordPrompt() {
+        let currentPass = getStoredPassword();
+        let pwd = prompt("തുടരാൻ പാസ്‌വേഡ് നൽകുക:");
+        if (pwd !== currentPass) {
+            alert("തെറ്റായ പാസ്‌വേഡ്!");
+            speakText("തെറ്റായ പാസ്‌വേഡ്");
+            return false;
+        }
+        return true;
+    }
+
+    function normalizeClass(clsVal) {
+        if (!clsVal && clsVal !== 0) return "";
+        let str = clsVal.toString().trim().toLowerCase();
+        let numMatch = str.match(/\d+/);
+        if (numMatch) return numMatch[0];
+        return str;
+    }
+
+    let classSubjects = {
+        "1": [{ name: 'ഖുർആൻ', pass: 35 }, { name: 'ഫിഖ്ഹ്', pass: 35 }],
+        "2": [{ name: 'ഖുർആൻ', pass: 35 }, { name: 'ഫിഖ്ഹ്', pass: 35 }, { name: 'തസ്കിയ', pass: 35 }],
+        "3": [{ name: 'ഖുർആൻ', pass: 40 }, { name: 'ഫിഖ്ഹ്', pass: 35 }, { name: 'തസ്കിയ', pass: 35 }, { name: 'ദുറൂസ് 1', pass: 35 }, { name: 'ദുറൂസ് 2', pass: 35 }],
+        "4": [{ name: 'ഖുർആൻ', pass: 40 }, { name: 'ഫിഖ്ഹ്', pass: 35 }, { name: 'തസ്കിയ', pass: 35 }, { name: 'ദുറൂസ് 1', pass: 35 }],
+        "5": [{ name: 'ഖുർആൻ', pass: 40 }, { name: 'ഫിഖ്ഹ്', pass: 35 }, { name: 'തസ്കിയ', pass: 35 }, { name: 'ദുറൂസ് 1', pass: 35 }],
+        "6": [{ name: 'ഖുർആൻ', pass: 40 }, { name: 'ഫിഖ്ഹ്', pass: 35 }, { name: 'തസ്കിയ', pass: 35 }, { name: 'ദുറൂസ് 1', pass: 35 }],
+        "7": [{ name: 'ഖുർആൻ', pass: 40 }, { name: 'ഫിഖ്ഹ്', pass: 35 }, { name: 'തസ്കിയ', pass: 35 }, { name: 'ദുറൂസ് 1', pass: 35 }],
+        "8": [{ name: 'ഖുർആൻ', pass: 40 }, { name: 'ഫിഖ്ഹ്', pass: 35 }, { name: 'തസ്കിയ', pass: 35 }, { name: 'ദുറൂസ് 1', pass: 35 }],
+        "9": [{ name: 'ഖുർആൻ', pass: 40 }, { name: 'ഫിഖ്ഹ്', pass: 35 }, { name: 'തസ്കിയ', pass: 35 }, { name: 'ദുറൂസ് 1', pass: 35 }],
+        "10": [{ name: 'ഖുർആൻ', pass: 40 }, { name: 'ഫിഖ്ഹ്', pass: 35 }, { name: 'തസ്കിയ', pass: 35 }, { name: 'ദുറൂസ് 1', pass: 35 }],
+        "11": [{ name: 'ഖുർആൻ', pass: 40 }, { name: 'ഫിഖ്ഹ്', pass: 35 }, { name: 'തസ്കിയ', pass: 35 }, { name: 'ദുറൂസ് 1', pass: 35 }],
+        "12": [{ name: 'ഖുർആൻ', pass: 40 }, { name: 'ഫിഖ്ഹ്', pass: 35 }, { name: 'തസ്കിയ', pass: 35 }, { name: 'ദുറൂസ് 1', pass: 35 }]
+    };
+
+    let students = [];
+    let payments = {};
+    let examFeePayments = {};
+    let marks = {};
+    
+    function loadSavedDataFromStorage() {
+        try {
+            if(localStorage.getItem('madrassa_class_subjects')) {
+                classSubjects = JSON.parse(localStorage.getItem('madrassa_class_subjects'));
+            }
+            students = JSON.parse(localStorage.getItem('madrassa_students')) || [];
+            payments = JSON.parse(localStorage.getItem('madrassa_payments')) || {};
+            examFeePayments = JSON.parse(localStorage.getItem('madrassa_exam_fee_payments')) || {};
+            marks = JSON.parse(localStorage.getItem('madrassa_marks')) || {};
+        } catch(e) {}
+    }
+
+    loadSavedDataFromStorage();
+
+    let currentId = null;
+    let certStudentData = null;
+
+    function getCurrentSubjects() {
+        let filterClsRaw = document.getElementById('filterClass').value;
+        let activeClsNorm = normalizeClass(filterClsRaw);
+        if (!activeClsNorm) {
+            if(students.length > 0) {
+                activeClsNorm = normalizeClass(students[0].className);
+            } else {
+                activeClsNorm = "1";
+            }
+        }
+        return classSubjects[activeClsNorm] || [];
+    }
+
+    function handleKeyPress(e) {
+        if (e.key === 'Enter') checkAppLogin();
+    }
+
+    function checkAppLogin() {
+        let inputPwd = document.getElementById('appLoginPassword').value.trim();
+        let currentPass = getStoredPassword();
+        if (inputPwd === currentPass) {
+            openAppUI();
+            speakText("ആപ്പ് വിജയകരമായി തുറന്നിരിക്കുന്നു");
+        } else {
+            alert('തെറ്റായ പാസ്‌വേഡ്!');
+            speakText("തെറ്റായ പാസ്‌വേഡ്");
+        }
+    }
+
+    function openAppUI() {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainAppContent').style.display = 'block';
+        try {
+            let savedInfo = localStorage.getItem('madrassa_info') || '';
+            document.getElementById('madrassaDetails').value = savedInfo;
+            if(savedInfo) document.getElementById('printMadrassaTitle').innerText = savedInfo;
+        } catch(e) {}
+        
+        if(students.length > 0) {
+            document.getElementById('filterClass').value = normalizeClass(students[0].className);
+        }
+        
+        buildMarkTableHeaders();
+        loadAllData();
+    }
+
+    function logoutApp() {
+        document.getElementById('appLoginPassword').value = '';
+        document.getElementById('mainAppContent').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        speakText("ആപ്പ് ലോക്ക് ചെയ്തിരിക്കുന്നു");
+    }
+
+    function saveMadrassaInfo() {
+        try {
+            let val = document.getElementById('madrassaDetails').value;
+            localStorage.setItem('madrassa_info', val);
+            document.getElementById('printMadrassaTitle').innerText = val || "നൂറുൽ ഉലൂം മദ്‌റസ";
+        } catch(e) {}
+    }
+
+    function updateUsthadDisplay() {
+        let usthadVal = document.getElementById('usthadNameInput').value.trim();
+        document.getElementById('displayUsthadName').innerText = usthadVal ? `ക്ലാസ് ഉസ്താദ്: ${usthadVal}` : `ക്ലാസ് ഉസ്താദ്: ...............................`;
+    }
+
+    function changePassword() {
+        if(!verifyPasswordPrompt()) return;
+        let newPwd = document.getElementById('newPasswordInput').value.trim();
+        if (!newPwd) {
+            alert("പുതിയ പാസ്‌വേഡ് നൽകുക!");
+            return;
+        }
+        try {
+            localStorage.setItem('madrassa_password', newPwd);
+        } catch(e) {}
+        document.getElementById('newPasswordInput').value = '';
+        alert("പാസ്‌വേഡ് വിജയകരമായി മാറ്റിയിരിക്കുന്നു!");
+        speakText("പാസ്‌വേഡ് മാറ്റിയിരിക്കുന്നു");
+    }
+
+    function onFilterClassChange() {
+        buildMarkTableHeaders();
+        loadAllData();
+    }
+
+    function buildMarkTableHeaders() {
+        let currentSubs = getCurrentSubjects();
+        let headerTr = document.getElementById('markTableHeader');
+        let html = `<th>ക്രമ നം</th><th>ക്ലാസ്</th><th>അഡ്മി നം</th><th>പേര്</th><th class="print-gender-col">ലിംഗം</th>`;
+        currentSubs.forEach(sub => {
+            html += `<th>${sub.name} <br>(പാസ്: ${sub.pass})</th>`;
+        });
+        html += `<th>ഹാജർ</th><th>ആകെ</th><th>ശതമാനം</th><th>ഗ്രേഡ്</th><th>റാങ്ക്</th><th>സ്റ്റാറ്റസ്</th><th class="no-print">നടപടികൾ</th>`;
+        headerTr.innerHTML = html;
+    }
+
+    function exportData() {
+        let backupData = {
+            madrassa_info: document.getElementById('madrassaDetails').value,
+            madrassa_students: students,
+            madrassa_payments: payments,
+            madrassa_exam_fee_payments: examFeePayments,
+            madrassa_marks: marks,
+            madrassa_class_subjects: classSubjects,
+            madrassa_password: getStoredPassword()
+        };
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+        let dlAnchor = document.createElement('a');
+        dlAnchor.setAttribute("href", dataStr);
+        dlAnchor.setAttribute("download", "madrassa_backup_" + new Date().toISOString().slice(0,10) + ".json");
+        document.body.appendChild(dlAnchor);
+        dlAnchor.click();
+        dlAnchor.remove();
+        speakText("ബാക്കപ്പ് ഫയൽ ഡൗൺലോഡ് ചെയ്തിരിക്കുന്നു");
+    }
+
+    function importData(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let rawData = JSON.parse(e.target.result);
+                let importedStudents = rawData.madrassa_students || rawData.students || (Array.isArray(rawData) ? rawData : null);
+                
+                if (importedStudents) {
+                    students = importedStudents.map(s => {
+                        s.className = normalizeClass(s.className || s.class || "1");
+                        return s;
+                    });
+                    payments = rawData.madrassa_payments || {};
+                    examFeePayments = rawData.madrassa_exam_fee_payments || {};
+                    marks = rawData.madrassa_marks || {};
+                    if (rawData.madrassa_class_subjects) classSubjects = rawData.madrassa_class_subjects;
+
+                    try {
+                        let infoVal = rawData.madrassa_info || '';
+                        localStorage.setItem('madrassa_info', infoVal);
+                        localStorage.setItem('madrassa_students', JSON.stringify(students));
+                        localStorage.setItem('madrassa_payments', JSON.stringify(payments));
+                        localStorage.setItem('madrassa_exam_fee_payments', JSON.stringify(examFeePayments));
+                        localStorage.setItem('madrassa_marks', JSON.stringify(marks));
+                        localStorage.setItem('madrassa_class_subjects', JSON.stringify(classSubjects));
+                        if(rawData.madrassa_password) localStorage.setItem('madrassa_password', rawData.madrassa_password);
+                        
+                        document.getElementById('madrassaDetails').value = infoVal;
+                        document.getElementById('printMadrassaTitle').innerText = infoVal || "നൂറുൽ ഉലൂം മദ്‌റസ";
+                    } catch(err) {}
+
+                    buildMarkTableHeaders();
+                    loadAllData();
+                    alert("ഡാറ്റ വിജയകരമായി ഇംപോർട്ട് ചെയ്തു! 🎉");
+                    speakText("ഡാറ്റ ഇംപോർട്ട് ചെയ്തിരിക്കുന്നു");
+                } else {
+                    alert("അസാധുവായ ബാക്കപ്പ് ഫയൽ!");
+                }
+            } catch (err) {
+                alert("ഫയൽ റീഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു!");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function saveNewStudent(event) {
+        event.preventDefault();
+        let student = {
+            id: Date.now().toString(),
+            name: document.getElementById('name').value,
+            gender: document.getElementById('gender').value,
+            className: normalizeClass(document.getElementById('className').value),
+            rollNo: document.getElementById('rollNo').value,
+            admNo: document.getElementById('admNo').value,
+            fee: document.getElementById('feeAmount').value,
+            mobile: document.getElementById('mobile').value
+        };
+        students.push(student);
+        try { localStorage.setItem('madrassa_students', JSON.stringify(students)); } catch(e) {}
+        
+        document.getElementById('studentForm').reset();
+        document.getElementById('filterClass').value = student.className;
+        buildMarkTableHeaders();
+        loadAllData();
+        alert("കുട്ടിയുടെ വിവരങ്ങൾ വിജയകരമായി സേവ് ചെയ്തു!");
+        speakText("കുട്ടിയുടെ വിവരങ്ങൾ സേവ് ചെയ്തു");
+    }
+
+    function openPersonalEditModal(id) {
+        if(!verifyPasswordPrompt()) return;
+        let s = students.find(item => item.id === id);
+        if(!s) return;
+
+        document.getElementById('editPersonalId').value = s.id;
+        document.getElementById('editPersName').value = s.name;
+        document.getElementById('editPersGender').value = s.gender;
+        document.getElementById('editPersClass').value = normalizeClass(s.className);
+        document.getElementById('editPersRollNo').value = s.rollNo;
+        document.getElementById('editPersAdmNo').value = s.admNo;
+        document.getElementById('editPersFee').value = s.fee;
+        document.getElementById('editPersMobile').value = s.mobile;
+
+        document.getElementById('personalEditModal').style.display = 'flex';
+        speakText("പേഴ്സണൽ വിവരങ്ങൾ തിരുത്താം");
+    }
+
+    function confirmPersonalEdit() {
+        let id = document.getElementById('editPersonalId').value;
+        let index = students.findIndex(s => s.id === id);
+        if(index !== -1) {
+            students[index].name = document.getElementById('editPersName').value;
+            students[index].gender = document.getElementById('editPersGender').value;
+            students[index].className = normalizeClass(document.getElementById('editPersClass').value);
+            students[index].rollNo = document.getElementById('editPersRollNo').value;
+            students[index].admNo = document.getElementById('editPersAdmNo').value;
+            students[index].fee = document.getElementById('editPersFee').value;
+            students[index].mobile = document.getElementById('editPersMobile').value;
+
+            try { localStorage.setItem('madrassa_students', JSON.stringify(students)); } catch(e) {}
+            closeModal('personalEditModal');
+            loadAllData();
+            alert("പേഴ്സണൽ വിവരങ്ങൾ വിജയകരമായി അപ്ഡേറ്റ് ചെയ്തു!");
+            speakText("വിവരങ്ങൾ അപ്ഡേറ്റ് ചെയ്തു");
+        }
+    }
+
+    function openFeeEditModal(id) {
+        if(!verifyPasswordPrompt()) return;
+        currentId = id;
+        let s = students.find(item => item.id === id);
+        let year = document.getElementById('selectYear').value;
+        let month = document.getElementById('selectMonth').value;
+        let payKey = `${id}_${year}_${month}`;
+
+        document.getElementById('editFeeId').value = id;
+        document.getElementById('feeEditStudentName').innerText = `കുട്ടി: ${s.name} (${year} ${month})`;
+        
+        let p = payments[payKey];
+        let isPaid = p ? true : false;
+        
+        document.getElementById('editFeeCategory').value = 'വരിസംഖ്യ';
+        document.getElementById('editFeeStatus').value = isPaid ? 'paid' : 'unpaid';
+        document.getElementById('editFeeTypeOption').value = (p && p.feeType) ? p.feeType : 'തൻമാസം';
+        document.getElementById('editFeeAmount').value = isPaid ? p.amount : s.fee;
+
+        document.getElementById('feeEditModal').style.display = 'flex';
+        speakText("ഫീസ് വിവരങ്ങൾ തിരുത്താം");
+    }
+
+    function confirmFeeEdit() {
+        let id = document.getElementById('editFeeId').value;
+        let year = document.getElementById('selectYear').value;
+        let month = document.getElementById('selectMonth').value;
+        let payKey = `${id}_${year}_${month}`;
+        let category = document.getElementById('editFeeCategory').value;
+        let status = document.getElementById('editFeeStatus').value;
+        let feeType = document.getElementById('editFeeTypeOption').value;
+        let amount = document.getElementById('editFeeAmount').value;
+
+        let now = new Date();
+        let dateStr = now.toLocaleDateString();
+        let timeStr = now.toLocaleTimeString();
+
+        if(category === 'വരിസംഖ്യ') {
+            if(status === 'paid') {
+                payments[payKey] = { amount: amount, feeType: feeType, date: dateStr, time: timeStr };
+            } else {
+                delete payments[payKey];
+            }
+            try { localStorage.setItem('madrassa_payments', JSON.stringify(payments)); } catch(e) {}
+        } else {
+            if(status === 'paid') {
+                examFeePayments[payKey] = { amount: amount, feeType: feeType, date: dateStr, time: timeStr };
+            } else {
+                delete examFeePayments[payKey];
+            }
+            try { localStorage.setItem('madrassa_exam_fee_payments', JSON.stringify(examFeePayments)); } catch(e) {}
+        }
+
+        closeModal('feeEditModal');
+        loadAllData();
+        alert("ഫീസ് വിവരങ്ങൾ അപ്ഡേറ്റ് ചെയ്തു!");
+        speakText("ഫീസ് വിവരങ്ങൾ അപ്ഡേറ്റ് ചെയ്തു");
+    }
+
+    function sortStudentsByGenderAndRoll(list) {
+        let boys = list.filter(s => s.gender === 'ആൺ').sort((a, b) => (parseInt(a.rollNo) || 0) - (parseInt(b.rollNo) || 0));
+        let girls = list.filter(s => s.gender === 'പെൺ').sort((a, b) => (parseInt(a.rollNo) || 0) - (parseInt(b.rollNo) || 0));
+        return { boys, girls };
+    }
+
+    function loadAllData() {
+        let year = document.getElementById('selectYear').value;
+        let month = document.getElementById('selectMonth').value;
+        let filterClsRaw = document.getElementById('filterClass').value;
+        let filterClsNorm = normalizeClass(filterClsRaw);
+
+        if(filterClsNorm) {
+            document.getElementById('printClassTitle').innerText = `ക്ലാസ്: ${filterClsNorm} | (${year} ${month})`;
+        } else {
+            document.getElementById('printClassTitle').innerText = `എല്ലാ ക്ലാസ്സുകളും | (${year} ${month})`;
+        }
+
+        let filtered = students.filter(s => {
+            if (!filterClsNorm) return true;
+            return normalizeClass(s.className) === filterClsNorm;
+        });
+
+        let totalStudentsCount = filtered.length;
+        let boysCount = filtered.filter(s => s.gender === 'ആൺ').length;
+        let girlsCount = filtered.filter(s => s.gender === 'പെൺ').length;
+
+        let paidCount = 0, paidBoysCount = 0, paidGirlsCount = 0, paidAmountTotal = 0;
+        let unpaidCount = 0, unpaidBoysCount = 0, unpaidGirlsCount = 0, unpaidAmountTotal = 0;
+
+        filtered.forEach(s => {
+            let payKey = `${s.id}_${year}_${month}`;
+            let p = payments[payKey];
+            let stdFee = parseFloat(s.fee) || 0;
+
+            if (p) {
+                paidCount++;
+                if (s.gender === 'ആൺ') paidBoysCount++; else paidGirlsCount++;
+                paidAmountTotal += (parseFloat(p.amount) || 0);
+            } else {
+                unpaidCount++;
+                if (s.gender === 'ആൺ') unpaidBoysCount++; else unpaidGirlsCount++;
+                unpaidAmountTotal += stdFee;
+            }
+        });
+
+        document.getElementById('dashTotalStudents').innerText = `ആകെ: ${totalStudentsCount}`;
+        document.getElementById('dashGenderStudents').innerText = `ആൺ: ${boysCount} | പെൺ: ${girlsCount}`;
+        document.getElementById('dashPaidCount').innerText = `എണ്ണം: ${paidCount}`;
+        document.getElementById('dashPaidGenderCount').innerText = `ആൺ: ${paidBoysCount} | പെൺ: ${paidGirlsCount}`;
+        document.getElementById('dashPaidAmount').innerText = `ആകെ തുക: ₹${paidAmountTotal}`;
+        document.getElementById('dashUnpaidCount').innerText = `എണ്ണം: ${unpaidCount}`;
+        document.getElementById('dashUnpaidGenderCount').innerText = `ആൺ: ${unpaidBoysCount} | പെൺ: ${unpaidGirlsCount}`;
+        document.getElementById('dashUnpaidAmount').innerText = `ബാക്കി തുക: ₹${unpaidAmountTotal}`;
+
+        let { boys, girls } = sortStudentsByGenderAndRoll(filtered);
+
+        let personalTbody = document.getElementById('personalTableBody');
+        personalTbody.innerHTML = '';
+        
+        let renderPersonalRow = (s) => {
+            let normCls = normalizeClass(s.className);
+            return `<tr>
+                <td>${s.rollNo}</td>
+                <td>${normCls}ാം ക്ലാസ്</td>
+                <td>${s.admNo}</td>
+                <td>${s.name}</td>
+                <td>${s.gender}</td>
+                <td>₹${s.fee}</td>
+                <td>${s.mobile}</td>
+                <td class="no-print">
+                    <button type="button" class="btn-edit" onclick="openPersonalEditModal('${s.id}')" style="padding:8px 12px; font-size:16px; width:auto;">എഡിറ്റ്</button>
+                    <button type="button" class="btn-danger" onclick="deleteStudent('${s.id}')" style="padding:8px 12px; font-size:16px; width:auto; margin-left:4px;">ഡിലീറ്റ്</button>
+                </td>
+            </tr>`;
+        };
+
+        if(boys.length > 0) {
+            personalTbody.innerHTML += `<tr><td colspan="8" class="gender-header-row">👦 ആൺകുട്ടികൾ</td></tr>`;
+            boys.forEach(s => { personalTbody.innerHTML += renderPersonalRow(s); });
+        }
+        if(girls.length > 0) {
+            personalTbody.innerHTML += `<tr><td colspan="8" class="gender-header-row">👧 പെൺകുട്ടികൾ</td></tr>`;
+            girls.forEach(s => { personalTbody.innerHTML += renderPersonalRow(s); });
+        }
+
+        let feeTbody = document.getElementById('feeTableBody');
+        feeTbody.innerHTML = '';
+
+        let renderFeeRow = (s) => {
+            let payKey = `${s.id}_${year}_${month}`;
+            let p = payments[payKey];
+            let ep = examFeePayments[payKey];
+            let isPaid = p ? true : false;
+            let isExamPaid = ep ? true : false;
+
+            let statusIcon = isPaid ? `<span class="status-paid">✔</span> <small style="display:block; font-size:11px; color:#1b5e20;">(${p.feeType || 'തൻമാസം'})</small>` : '<span class="status-unpaid">✘</span>';
+            let examStatusIcon = isExamPaid ? `<span class="status-paid">✔</span> <small style="display:block; font-size:11px; color:#1b5e20;">(${ep.feeType || 'തൻമാസം'})</small>` : '<span class="status-unpaid">✘</span>';
+            let normCls = normalizeClass(s.className);
+            
+            return `<tr>
+                <td>${s.rollNo}</td>
+                <td>${normCls}ാം ക്ലാസ്</td>
+                <td>${s.admNo}</td>
+                <td>${s.name}</td>
+                <td>${statusIcon}</td>
+                <td>${s.gender}</td>
+                <td>${s.mobile}</td>
+                <td>${examStatusIcon}</td>
+                <td class="no-print">
+                    <button type="button" onclick="openFeeEditModal('${s.id}')" class="btn-edit" style="padding:8px 12px; font-size:16px; width:auto;">എഡിറ്റ്</button>
+                    <button type="button" class="btn-wa" onclick="sendFeeWhatsAppDirect('${s.id}', 'വരിസംഖ്യ')" style="padding:8px 12px; font-size:16px; width:auto; margin-left:4px;">വാട്‌സാപ്പ്</button>
+                    <button type="button" class="btn-danger" onclick="deleteStudent('${s.id}')" style="padding:8px 12px; font-size:16px; width:auto; margin-left:4px;">ഡിലീറ്റ്</button>
+                </td>
+            </tr>`;
+        };
+
+        if(boys.length > 0) {
+            feeTbody.innerHTML += `<tr><td colspan="9" class="gender-header-row">👦 ആൺകുട്ടികൾ</td></tr>`;
+            boys.forEach(s => { feeTbody.innerHTML += renderFeeRow(s); });
+        }
+        if(girls.length > 0) {
+            feeTbody.innerHTML += `<tr><td colspan="9" class="gender-header-row">👧 പെൺകുട്ടികൾ</td></tr>`;
+            girls.forEach(s => { feeTbody.innerHTML += renderFeeRow(s); });
+        }
+
+        let markTbody = document.getElementById('markTableBody');
+        markTbody.innerHTML = '';
+
+        let passedBoys = 0, passedGirls = 0, failedBoys = 0, failedGirls = 0;
+        let activeSubs = getCurrentSubjects();
+        let totalCols = 11 + activeSubs.length;
+
+        let allScored = filtered.map(s => {
+            let markKey = `${s.id}_${year}_${month}`;
+            let sm = marks[markKey] || {};
+            let total = 0;
+            let hasMarks = Object.keys(sm).length > 0;
+            let normCls = normalizeClass(s.className);
+            let subs = classSubjects[normCls] || [];
+            
+            subs.forEach(sub => {
+                let val = sm[sub.name];
+                if (val !== undefined && val !== '' && val.toString().toUpperCase() !== 'A') {
+                    total += (parseFloat(val) || 0);
+                }
+            });
+            return { studentId: s.id, total, hasMarks };
+        });
+
+        allScored.sort((a, b) => b.total - a.total);
+        let rankMap = {};
+        allScored.forEach((item, index) => {
+            if (item.hasMarks) {
+                let rankNum = index + 1;
+                let rankDisplay = rankNum === 1 ? '1 🥇' : (rankNum === 2 ? '2 🥈' : (rankNum === 3 ? '3 🥉' : rankNum));
+                rankMap[item.studentId] = rankDisplay;
+            } else {
+                rankMap[item.studentId] = '-';
+            }
+        });
+
+        let renderMarkRow = (s) => {
+            let markKey = `${s.id}_${year}_${month}`;
+            let sm = marks[markKey] || {};
+            let total = 0;
+            let hasMarks = Object.keys(sm).length > 0;
+            let normCls = normalizeClass(s.className);
+            let studentSubs = classSubjects[normCls] || [];
+            let isPassed = true, isFirstClassOrAbove = true, isAbsentAny = false;
+
+            if (studentSubs.length === 0) { isFirstClassOrAbove = false; isPassed = false; }
+
+            studentSubs.forEach(sub => {
+                let mVal = sm[sub.name];
+                if (mVal !== undefined && mVal !== '') {
+                    if (mVal.toString().toUpperCase() === 'A') {
+                        isAbsentAny = true;
+                        isPassed = false;
+                        isFirstClassOrAbove = false;
+                    } else {
+                        let m = parseFloat(mVal) || 0;
+                        total += m;
+                        if (m < sub.pass) isPassed = false;
+                        if (m < 60) isFirstClassOrAbove = false;
+                    }
+                } else {
+                    isPassed = false;
+                    isFirstClassOrAbove = false;
+                }
+            });
+
+            if (sm.passed !== undefined) isPassed = sm.passed;
+
+            if (hasMarks) {
+                if (isPassed && !isAbsentAny) { if (s.gender === 'ആൺ') passedBoys++; else passedGirls++; }
+                else { if (s.gender === 'ആൺ') failedBoys++; else failedGirls++; }
+            }
+
+            let maxTotal = studentSubs.length * 100;
+            let percentage = maxTotal > 0 ? ((total / maxTotal) * 100).toFixed(1) : 0;
+            let grade = '-';
+            if (hasMarks && studentSubs.length > 0 && !isAbsentAny) {
+                if (percentage >= 90) grade = 'A++';
+                else if (percentage >= 80) grade = 'A+';
+                else if (percentage >= 70) grade = 'A';
+                else if (percentage >= 60) grade = 'B+';
+                else if (percentage >= 50) grade = 'B';
+                else if (percentage >= 40) grade = 'C';
+                else grade = 'D';
+            } else if (isAbsentAny) {
+                grade = 'Absent';
+            }
+
+            let rankDisplay = rankMap[s.id] || '-';
+            let markStatus = hasMarks ? (isPassed ? '<span style="color:green;">വിജയിച്ചു</span>' : '<span style="color:red;">പരാജയപ്പെട്ടു</span>') : '<span style="color:gray;">ചേർത്തിട്ടില്ല</span>';
+            let attText = (sm.attPresent !== undefined && sm.attTotal !== undefined) ? `${sm.attPresent}/${sm.attTotal}` : '-';
+
+            let certBtnHtml = '';
+            if (hasMarks && studentSubs.length > 0 && isFirstClassOrAbove && isPassed && !isAbsentAny) {
+                certBtnHtml = `<button type="button" class="btn-cert" onclick="openCertificate('${s.id}')" style="padding:6px 10px; font-size:14px; width:auto; margin-top:3px;">സർട്ടിഫിക്കറ്റ്</button>`;
+            }
+
+            let row = `<tr>
+                <td>${s.rollNo}</td>
+                <td>${normCls}ാം ക്ലാസ്</td>
+                <td>${s.admNo}</td>
+                <td>${s.name}</td>
+                <td class="print-gender-col">${s.gender}</td>`;
+
+            activeSubs.forEach(sub => {
+                let mVal = sm[sub.name];
+                if (mVal !== undefined && mVal !== '') {
+                    if (mVal.toString().toUpperCase() === 'A') {
+                        row += `<td><span class="absent-mark">A</span></td>`;
+                    } else {
+                        row += `<td>${mVal}</td>`;
+                    }
+                } else {
+                    row += `<td>-</td>`;
+                }
+            });
+
+            row += `<td>${attText}</td>
+                <td>${hasMarks ? total + '/' + maxTotal : '-'}</td>
+                <td>${hasMarks ? percentage + '%' : '-'}</td>
+                <td>${grade}</td>
+                <td>${rankDisplay}</td>
+                <td>${markStatus}</td>
+                <td class="no-print">
+                    <button type="button" onclick="openMarkModal('${s.id}')" style="padding:8px 12px; font-size:16px; width:auto; background-color:#ff9800;">മാർക്ക് / ഹാജർ തിരുത്താൻ</button>
+                    <button type="button" class="btn-wa" onclick="sendMarkWhatsAppDirect('${s.id}')" style="padding:8px 12px; font-size:16px; width:auto; margin-left:4px;">വാട്‌സാപ്പ്</button>
+                    <button type="button" class="btn-danger" onclick="deleteStudent('${s.id}')" style="padding:8px 12px; font-size:16px; width:auto; margin-left:4px;">ഡിലീറ്റ്</button>
+                    ${certBtnHtml}
+                </td>
+            </tr>`;
+            return row;
+        };
+
+        if(boys.length > 0) {
+            markTbody.innerHTML += `<tr><td colspan="${totalCols}" class="gender-header-row">👦 ആൺകുട്ടികൾ</td></tr>`;
+            boys.forEach(s => { markTbody.innerHTML += renderMarkRow(s); });
+        }
+        if(girls.length > 0) {
+            markTbody.innerHTML += `<tr><td colspan="${totalCols}" class="gender-header-row">👧 പെൺകുട്ടികൾ</td></tr>`;
+            girls.forEach(s => { markTbody.innerHTML += renderMarkRow(s); });
+        }
+
+        document.getElementById('summaryPassedGender').innerHTML = `<strong>വിജയികൾ:</strong> ആൺ: ${passedBoys} + പെൺ: ${passedGirls} = ആകെ: ${passedBoys + passedGirls}`;
+        document.getElementById('summaryFailedGender').innerHTML = `<strong>പരാജയപ്പെട്ടവർ:</strong> ആൺ: ${failedBoys} + പെൺ: ${failedGirls} = ആകെ: ${failedBoys + failedGirls}`;
+        updateUsthadDisplay();
+    }
+
+    function openMarkModal(id) {
+        if(!verifyPasswordPrompt()) return;
+        currentId = id;
+        let s = students.find(item => item.id === id);
+        let year = document.getElementById('selectYear').value;
+        let month = document.getElementById('selectMonth').value;
+        let markKey = `${id}_${year}_${month}`;
+        let sm = marks[markKey] || {};
+        let normCls = normalizeClass(s.className);
+
+        document.getElementById('markStudentName').innerText = `കുട്ടി: ${s.name} (ക്ലാസ്: ${normCls}ാം ക്ലാസ്)`;
+        document.getElementById('examTypeSelect').value = sm.examType || 'വാർഷിക പരീക്ഷ';
+        document.getElementById('attPresent').value = sm.attPresent !== undefined ? sm.attPresent : '';
+        document.getElementById('attTotal').value = sm.attTotal !== undefined ? sm.attTotal : '';
+        
+        renderMarkModalInputs(normCls, sm);
+        document.getElementById('markModal').style.display = 'flex';
+        speakText("മാർക്കും ഹാജറും തിരുത്താം");
+    }
+
+    function renderMarkModalInputs(classNameNorm, sm) {
+        let container = document.getElementById('dynamicMarkInputs');
+        container.innerHTML = '';
+        let studentSubs = classSubjects[classNameNorm] || [];
+
+        studentSubs.forEach((sub, index) => {
+            let val = (sm[sub.name] !== undefined) ? sm[sub.name] : '';
+            container.innerHTML += `
+                <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px;" id="sub_row_${index}">
+                    <input type="text" value="${sub.name}" placeholder="വിഷയം" id="modal_sub_name_${index}" style="width: 42%; padding:10px; font-size:17px;">
+                    <input type="number" value="${sub.pass}" placeholder="പാസ്സ്" id="modal_sub_pass_${index}" style="width: 25%; padding:10px; font-size:17px; text-align:center;">
+                    <input type="text" value="${val}" id="modal_sub_mark_${index}" placeholder="മാർക്ക് അല്ലെങ്കിൽ A" style="width: 25%; padding:10px; font-size:17px; text-align:center;">
+                    <button type="button" onclick="removeSubjectRow(${index})" style="width: 8%; background-color:#c62828; padding:10px 0; margin-top:0; font-size:18px; border-radius:5px;" title="ഡിലീറ്റ്">✖</button>
+                </div>
+            `;
+        });
+    }
+
+    function addNewSubjectInModal() {
+        let s = students.find(item => item.id === currentId);
+        let normCls = normalizeClass(s.className);
+        let studentSubs = classSubjects[normCls] || [];
+        studentSubs.push({ name: '', pass: 35 });
+        let tempSm = collectMarksFromModalInputs(normCls);
+        renderMarkModalInputs(normCls, tempSm);
+    }
+
+    function removeSubjectRow(index) {
+        let s = students.find(item => item.id === currentId);
+        let normCls = normalizeClass(s.className);
+        let tempSm = collectMarksFromModalInputs(normCls);
+        let studentSubs = classSubjects[normCls] || [];
+        let subNameTodelete = document.getElementById(`modal_sub_name_${index}`).value;
+        classSubjects[normCls] = studentSubs.filter(sub => sub.name !== subNameTodelete);
+        renderMarkModalInputs(normCls, tempSm);
+    }
+
+    function collectMarksFromModalInputs(classNameNorm) {
+        let studentSubs = classSubjects[classNameNorm] || [];
+        let tempSm = {};
+        studentSubs.forEach((sub, index) => {
+            let nameInput = document.getElementById(`modal_sub_name_${index}`);
+            let passInput = document.getElementById(`modal_sub_pass_${index}`);
+            let markInput = document.getElementById(`modal_sub_mark_${index}`);
+            if(nameInput && passInput && markInput) {
+                let sName = nameInput.value.trim();
+                let sPass = parseFloat(passInput.value) || 35;
+                let sVal = markInput.value.trim();
+                if(sName) {
+                    if(sVal.toUpperCase() === 'A') {
+                        tempSm[sName] = 'A';
+                    } else {
+                        let parsedM = parseFloat(sVal);
+                        tempSm[sName] = isNaN(parsedM) ? 0 : parsedM;
+                    }
+                }
+            }
+        });
+        return tempSm;
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+        currentId = null;
+    }
+
+    function confirmMarks() {
+        let year = document.getElementById('selectYear').value;
+        let month = document.getElementById('selectMonth').value;
+        let s = students.find(item => item.id === currentId);
+        let markKey = `${s.id}_${year}_${month}`;
+        let classNameNorm = normalizeClass(s.className);
+
+        let newSubsList = [];
+        let studentMarks = {};
+        let isPassed = true;
+        let i = 0;
+
+        while(true) {
+            let nameInput = document.getElementById(`modal_sub_name_${i}`);
+            let passInput = document.getElementById(`modal_sub_pass_${i}`);
+            let markInput = document.getElementById(`modal_sub_mark_${i}`);
+            if(!nameInput) break;
+
+            let sName = nameInput.value.trim();
+            let sPass = parseFloat(passInput.value) || 35;
+            let sVal = markInput.value.trim();
+
+            if(sName) {
+                newSubsList.push({ name: sName, pass: sPass });
+                if(sVal.toUpperCase() === 'A') {
+                    studentMarks[sName] = 'A';
+                    isPassed = false;
+                } else {
+                    let m = parseFloat(sVal);
+                    let finalM = isNaN(m) ? 0 : m;
+                    studentMarks[sName] = finalM;
+                    if(finalM < sPass) isPassed = false;
+                }
+            }
+            i++;
+        }
+
+        classSubjects[classNameNorm] = newSubsList;
+        try { localStorage.setItem('madrassa_class_subjects', JSON.stringify(classSubjects)); } catch(e) {}
+
+        studentMarks.examType = document.getElementById('examTypeSelect').value;
+        studentMarks.attPresent = parseFloat(document.getElementById('attPresent').value) || 0;
+        studentMarks.attTotal = parseFloat(document.getElementById('attTotal').value) || 0;
+        studentMarks.passed = isPassed;
+
+        marks[markKey] = studentMarks;
+        try { localStorage.setItem('madrassa_marks', JSON.stringify(marks)); } catch(e) {}
+
+        closeModal('markModal');
+        buildMarkTableHeaders();
+        loadAllData();
+        alert("മാർക്കും ഹാജറും വിജയകരമായി അപ്ഡേറ്റ് ചെയ്തു!");
+        speakText("മാർക്കും ഹാജറും സേവ് ചെയ്തു");
+    }
+
+    function openCertificate(id) {
+        let s = students.find(item => item.id === id);
+        let year = document.getElementById('selectYear').value;
+        let month = document.getElementById('selectMonth').value;
+        let madrassaName = document.getElementById('madrassaDetails').value || "നൂറുൽ ഉലൂം മദ്‌റസ";
+        let markKey = `${id}_${year}_${month}`;
+        let sm = marks[markKey] || {};
+        let normCls = normalizeClass(s.className);
+        let studentSubs = classSubjects[normCls] || [];
+
+        let total = 0, allAplus = true;
+        studentSubs.forEach(sub => {
+            let mVal = sm[sub.name];
+            let m = (mVal !== undefined && mVal !== '' && mVal.toString().toUpperCase() !== 'A') ? parseFloat(mVal) || 0 : 0;
+            total += m;
+            if (m < 80) allAplus = false;
+        });
+
+        let maxTotal = studentSubs.length * 100;
+        let percentage = maxTotal > 0 ? ((total / maxTotal) * 100) : 0;
+        let examTypeVal = sm.examType || "വാർഷിക പരീക്ഷ";
+        let gradeText = allAplus ? "എല്ലാ വിഷയങ്ങളിലും A+ നേട്ടം" : (percentage >= 80 ? "ഡിസ്റ്റിംഗ്ഷനോടെ ഫസ്റ്റ് ക്ലാസ്സ്" : "ഉന്നത വിജയത്തോടെ ഫസ്റ്റ് ക്ലാസ്സ്");
+
+        certStudentData = s;
+        document.getElementById('certMadrassaName').innerText = madrassaName;
+        document.getElementById('certYearMonth').innerText = `${year} ${month}`;
+        document.getElementById('certClassName').innerText = `${normCls}-ാം ക്ലാസ്`;
+        document.getElementById('certStudentName').innerText = s.name;
+        document.getElementById('certExamType').innerText = `${examTypeVal}യിൽ`;
+        document.getElementById('certGradeLevel').innerText = gradeText;
+        document.getElementById('certDate').innerText = new Date().toLocaleDateString();
+
+        document.getElementById('certModal').style.display = 'flex';
+        speakText("അഭിനന്ദന സർട്ടിഫിക്കറ്റ് തയ്യാറാണ്");
+    }
+
+    function closeCertModal() { document.getElementById('certModal').style.display = 'none'; }
+
+    function downloadCertificateJPG() {
+        html2canvas(document.getElementById('certBox'), { scale: 2 }).then(canvas => {
+            let link = document.createElement('a');
+            link.download = `Certificate_${certStudentData.name}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 1.0);
+            link.click();
+            speakText("സർട്ടിഫിക്കറ്റ് ഡൗൺലോഡ് ചെയ്തിരിക്കുന്നു");
+        });
+    }
+
+    function sendFeeWhatsAppDirect(id, category) {
+        let year = document.getElementById('selectYear').value;
+        let month = document.getElementById('selectMonth').value;
+        let s = students.find(item => item.id === id);
+        let payKey = `${s.id}_${year}_${month}`;
+        let p = payments[payKey];
+        if (!p) { alert("ഫീസ് അടച്ചതായി രേഖപ്പെടുത്തിയിട്ടില്ല!"); return; }
+
+        let madrassaName = (document.getElementById('madrassaDetails').value || "നൂറുൽ ഉലൂം മദ്‌റസ").trim();
+        let message = `*${madrassaName}*\n\n*${normalizeClass(s.className)}-ാം ക്ലാസിൽ* പഠിക്കുന്ന *${s.name.trim()}* *${year} ${month}* മാസത്തെ *${category}* (${p.feeType || 'തൻമാസം'}) ഇനത്തിൽ *₹${p.amount}* അടച്ചിരിക്കുന്നു.\n\n*തിയതി:* ${p.date}\n*സമയം:* ${p.time}\n\nتقبل الله شكرا جزاكم الله خيرا`;
+        window.open(`https://wa.me/91${s.mobile}?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    function sendMarkWhatsAppDirect(id) {
+        let year = document.getElementById('selectYear').value;
+        let month = document.getElementById('selectMonth').value;
+        let s = students.find(item => item.id === id);
+        let markKey = `${s.id}_${year}_${month}`;
+        let sm = marks[markKey];
+        if (!sm) { alert("മാർക്ക് വിവരങ്ങൾ ചേർത്തിട്ടില്ല!"); return; }
+
+        let studentSubs = classSubjects[normalizeClass(s.className)] || [];
+        let total = 0, subDetails = "";
+        studentSubs.forEach(sub => {
+            let mVal = sm[sub.name];
+            subDetails += `*${sub.name}: ${mVal !== undefined ? mVal : '-'}*\n`;
+        });
+
+        let message = `*${(document.getElementById('madrassaDetails').value || "നൂറുൽ ഉലൂം മദ്‌റസ").trim()}*\n\n*${normalizeClass(s.className)}-ാം ക്ലാസിൽ* പഠിക്കുന്ന *${s.name.trim()}*-ന്റെ *${sm.examType || "പരീക്ഷ"}* മാർക്ക് വിവരം:\n\n${subDetails}\n*ഹാജർ: ${sm.attPresent || 0}/${sm.attTotal || 0}*\n*ഫലം:* *${sm.passed ? "വിജയിച്ചു" : "പരാജയപ്പെട്ടു / Absent"}*\n\nشكرا جزاكم الله خيرا`;
+        window.open(`https://wa.me/91${s.mobile}?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    function deleteStudent(id) {
+        if(!verifyPasswordPrompt()) return;
+        if (confirm("തീർച്ചയായും ഈ കുട്ടിയെ ഡിലീറ്റ് ചെയ്യേണ്ടതുണ്ടോ?")) {
+            students = students.filter(s => s.id !== id);
+            try { localStorage.setItem('madrassa_students', JSON.stringify(students)); } catch(e) {}
+            loadAllData();
+            alert("കുട്ടിയെ ഡിലീറ്റ് ചെയ്തു!");
+            speakText("കുട്ടിയെ ഡിലീറ്റ് ചെയ്തിരിക്കുന്നു");
+        }
+    }
+
+    function deleteEntireClass() {
+        let selectedClassNorm = normalizeClass(document.getElementById('bulkDeleteClassSelect').value);
+        if (!selectedClassNorm) { alert("ദയവായി ഡിലീറ്റ് ചെയ്യേണ്ട ക്ലാസ് തിരഞ്ഞെടുക്കുക!"); return; }
+        if(!verifyPasswordPrompt()) return;
+
+        if (confirm(`തീർച്ചയായും ക്ലാസ് ${selectedClassNorm}-ലെ മുഴുവൻ കുട്ടികളെയും ഡിലീറ്റ് ചെയ്യേണ്ടതുണ്ടോ?`)) {
+            students = students.filter(s => normalizeClass(s.className) !== selectedClassNorm);
+            try { localStorage.setItem('madrassa_students', JSON.stringify(students)); } catch(e) {}
+            loadAllData();
+            alert(`ക്ലാസ് ${selectedClassNorm}-ലെ മുഴുവൻ കുട്ടികളെയും വിജയകരമായി ഡിലീറ്റ് ചെയ്തു!`);
+            speakText("ക്ലാസ് ഡിലീറ്റ് ചെയ്തിരിക്കുന്നു");
+        }
+    }
+
+    function searchStudent() {
+        let query = document.getElementById('searchBox').value.toLowerCase();
+        let filtered = students.filter(s => s.name.toLowerCase().includes(query) || s.rollNo.includes(query) || s.mobile.includes(query));
+
+        let personalTbody = document.getElementById('personalTableBody');
+        personalTbody.innerHTML = '';
+        let feeTbody = document.getElementById('feeTableBody');
+        feeTbody.innerHTML = '';
+        
+        let { boys, girls } = sortStudentsByGenderAndRoll(filtered);
+
+        let renderPersonalRow = (s) => `<tr><td>${s.rollNo}</td><td>${normalizeClass(s.className)}ാം ക്ലാസ്</td><td>${s.admNo}</td><td>${s.name}</td><td>${s.gender}</td><td>₹${s.fee}</td><td>${s.mobile}</td><td class="no-print"><button type="button" class="btn-edit" onclick="openPersonalEditModal('${s.id}')" style="padding:8px 12px; font-size:16px; width:auto;">എഡിറ്റ്</button> <button type="button" class="btn-danger" onclick="deleteStudent('${s.id}')" style="padding:8px 12px; font-size:16px; width:auto; margin-left:4px;">ഡിലീറ്റ്</button></td></tr>`;
+        
+        let renderFeeRow = (s) => {
+            let payKey = `${s.id}_${document.getElementById('selectYear').value}_${document.getElementById('selectMonth').value}`;
+            let p = payments[payKey];
+            let ep = examFeePayments[payKey];
+            let isPaid = p ? true : false;
+            let isExamPaid = ep ? true : false;
+            return `<tr><td>${s.rollNo}</td><td>${normalizeClass(s.className)}ാം ക്ലാസ്</td><td>${s.admNo}</td><td>${s.name}</td><td>${isPaid ? `<span class="status-paid">✔</span> <small style="display:block; font-size:11px; color:#1b5e20;">(${p.feeType || 'തൻമാസം'})</small>` : '<span class="status-unpaid">✘</span>'}</td><td>${s.gender}</td><td>${s.mobile}</td><td>${isExamPaid ? `<span class="status-paid">✔</span> <small style="display:block; font-size:11px; color:#1b5e20;">(${ep.feeType || 'തൻമാസം'})</small>` : '<span class="status-unpaid">✘</span>'}</td><td class="no-print"><button type="button" onclick="openFeeEditModal('${s.id}')" class="btn-edit" style="padding:8px 12px; font-size:16px; width:auto;">എഡിറ്റ്</button> <button type="button" class="btn-wa" onclick="sendFeeWhatsAppDirect('${s.id}', 'വരിസംഖ്യ')" style="padding:8px 12px; font-size:16px; width:auto; margin-left:4px;">വാട്‌സാപ്പ്</button> <button type="button" class="btn-danger" onclick="deleteStudent('${s.id}')" style="padding:8px 12px; font-size:16px; width:auto; margin-left:4px;">ഡിലീറ്റ്</button></td></tr>`;
+        };
+
+        if(boys.length > 0) {
+            personalTbody.innerHTML += `<tr><td colspan="8" class="gender-header-row">👦 ആൺകുട്ടികൾ</td></tr>`;
+            boys.forEach(s => personalTbody.innerHTML += renderPersonalRow(s));
+            feeTbody.innerHTML += `<tr><td colspan="9" class="gender-header-row">👦 ആൺകുട്ടികൾ</td></tr>`;
+            boys.forEach(s => feeTbody.innerHTML += renderFeeRow(s));
+        }
+        if(girls.length > 0) {
+            personalTbody.innerHTML += `<tr><td colspan="8" class="gender-header-row">👧 പെൺകുട്ടികൾ</td></tr>`;
+            girls.forEach(s => personalTbody.innerHTML += renderPersonalRow(s));
+            feeTbody.innerHTML += `<tr><td colspan="9" class="gender-header-row">👧 പെൺകുട്ടികൾ</td></tr>`;
+            girls.forEach(s => feeTbody.innerHTML += renderFeeRow(s));
+        }
+    }
+</script>
+
+</body>
+</html>
